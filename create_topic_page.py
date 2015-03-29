@@ -11,34 +11,34 @@ class CreateTopicPage(object):
     timeout = 10
 
     title_xpath      = ".//*[@id='id_title']"
-    short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[3]/div[6]/div[1]/div/div/div/div[3]/pre"
-    text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[6]/div[6]/div[1]/div/div/div/div[3]/pre"
+    short_text_xpath = ".//*[@id='id_text_short']"
+    text_xpath       = ".//*[@id='id_text']"
 
-    bold_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[1]"
-    bold_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[1]"
-
-    italic_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[2]"
-    italic_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[2]"
-
-    quote_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[3]"
-    quote_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[3]"
-
-    list_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[5]"
-    list_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[5]"
-
-    insert_link_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[6]"
-    insert_link_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[6]"
-
-    insert_img_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[7]"
-    insert_img_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[7]"
-
-    upload_img_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[8]"
-    upload_img_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[8]"
-
-    add_user_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[9]"
-    add_user_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[9]"
-
-    submit_btn_xpath = ".//*[@id='content']/div/div[1]/form/div/button"
+    # bold_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[1]"
+    # bold_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[1]"
+    #
+    # italic_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[2]"
+    # italic_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[2]"
+    #
+    # quote_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[3]"
+    # quote_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[3]"
+    #
+    # list_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[5]"
+    # list_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[5]"
+    #
+    # insert_link_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[6]"
+    # insert_link_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[6]"
+    #
+    # insert_img_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[7]"
+    # insert_img_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[7]"
+    #
+    # upload_img_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[8]"
+    # upload_img_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[8]"
+    #
+    # add_user_btn_short_text_xpath = ".//*[@id='content']/div/div[1]/form/div/div[2]/a[9]"
+    # add_user_btn_text_xpath       = ".//*[@id='content']/div/div[1]/form/div/div[5]/a[9]"
+    #
+    # submit_btn_xpath = ".//*[@id='content']/div/div[1]/form/div/button"
 
     title = "Тестовый заговок"
     short_text = "Тестовый короткий текст"
@@ -80,54 +80,54 @@ class CreateTopicPage(object):
     def close_page(self):
         self.driver.quit()
 
-    def get_blog_xpath_by_id(self, id_blog):
-        if id_blog < 0:
-            raise ValueError
-        return ".//*[@id='id_blog_chzn_o_{id_blog}']".format(id_blog=id_blog)
-
-
-    def click_bold_bth_short_text(self):
-        driver = self.driver
-        bold_btn = driver.find_element_by_xpath(self.bold_btn_short_text_xpath)
-        bold_btn.click()
-
-    def click_bold_bth_text(self):
-        driver = self.driver
-        bold_btn = driver.find_element_by_xpath(self.bold_btn_text_xpath)
-        bold_btn.click()
-
-
-    def click_italic_bth_short_text(self):
-        driver = self.driver
-        italic_btn = driver.find_element_by_xpath(self.italic_btn_short_text_xpath)
-        italic_btn.click()
-
-    def click_italic_bth_text(self):
-        driver = self.driver
-        italic_btn = driver.find_element_by_xpath(self.italic_btn_text_xpath)
-        italic_btn.click()
-
-
-    def click_quote_btn_short_text(self):
-        driver = self.driver
-        quote_btn = driver.find_element_by_xpath(self.quote_btn_short_text_xpath)
-        quote_btn.click()
-
-    def click_quote_btn_text(self):
-        driver = self.driver
-        quote_btn = driver.find_element_by_xpath(self.quote_btn_text_xpath)
-        quote_btn.click()
-
-
-    def click_list_btn_short_text(self):
-        driver = self.driver
-        list_btn = driver.find_element_by_xpath(self.list_btn_short_text_xpath)
-        list_btn.click()
-
-    def click_list_btn_text(self):
-        driver = self.driver
-        list_btn = driver.find_element_by_xpath(self.list_btn_text_xpath)
-        list_btn.click()
+    # def get_blog_xpath_by_id(self, id_blog):
+    #     if id_blog < 0:
+    #         raise ValueError
+    #     return ".//*[@id='id_blog_chzn_o_{id_blog}']".format(id_blog=id_blog)
+    #
+    #
+    # def click_bold_bth_short_text(self):
+    #     driver = self.driver
+    #     bold_btn = driver.find_element_by_xpath(self.bold_btn_short_text_xpath)
+    #     bold_btn.click()
+    #
+    # def click_bold_bth_text(self):
+    #     driver = self.driver
+    #     bold_btn = driver.find_element_by_xpath(self.bold_btn_text_xpath)
+    #     bold_btn.click()
+    #
+    #
+    # def click_italic_bth_short_text(self):
+    #     driver = self.driver
+    #     italic_btn = driver.find_element_by_xpath(self.italic_btn_short_text_xpath)
+    #     italic_btn.click()
+    #
+    # def click_italic_bth_text(self):
+    #     driver = self.driver
+    #     italic_btn = driver.find_element_by_xpath(self.italic_btn_text_xpath)
+    #     italic_btn.click()
+    #
+    #
+    # def click_quote_btn_short_text(self):
+    #     driver = self.driver
+    #     quote_btn = driver.find_element_by_xpath(self.quote_btn_short_text_xpath)
+    #     quote_btn.click()
+    #
+    # def click_quote_btn_text(self):
+    #     driver = self.driver
+    #     quote_btn = driver.find_element_by_xpath(self.quote_btn_text_xpath)
+    #     quote_btn.click()
+    #
+    #
+    # def click_list_btn_short_text(self):
+    #     driver = self.driver
+    #     list_btn = driver.find_element_by_xpath(self.list_btn_short_text_xpath)
+    #     list_btn.click()
+    #
+    # def click_list_btn_text(self):
+    #     driver = self.driver
+    #     list_btn = driver.find_element_by_xpath(self.list_btn_text_xpath)
+    #     list_btn.click()
 
     def submit(self):
         driver = self.driver
