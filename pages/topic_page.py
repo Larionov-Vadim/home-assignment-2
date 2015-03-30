@@ -1,4 +1,5 @@
 # coding: utf-8
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 
 from base import Page
@@ -12,13 +13,12 @@ class CreatePage(Page):
     def form(self):
         return CreateForm(self.driver)
 
-
 class CreateForm(Component):
     BLOGSELECT = '//a[@class="chzn-single"]'
     OPTION = '//li[text()="{}"]'
     TITLE = '//input[@name="title"]'
-    SHORT_TEXT = '//textarea[@name="text_short"]'
-    MAIN_TEXT = '//textarea[@id="id_text"]'
+    SHORT_TEXT = '(//*[@class="CodeMirror-scroll"])[1]'     # xpath short_text
+    MAIN_TEXT = '(//*[@class="CodeMirror-scroll"])[2]'      # xpath main_text
     CREATE_BUTTON = '//button[contains(text(),"Создать")]'
 
     def blog_select_open(self):
@@ -32,13 +32,26 @@ class CreateForm(Component):
 
     def set_short_text(self, short_text):
         short_text_field = self.driver.find_element_by_xpath(self.SHORT_TEXT)
-        short_text_field.send_keys(short_text)
+        action = ActionChains(self.driver)
+        action.click(short_text_field)
+        action.send_keys(short_text)
+        action.perform()
 
     def set_main_text(self, main_text):
-        self.driver.find_element_by_xpath(self.MAIN_TEXT).send_keys(main_text)
+        main_text_field = self.driver.find_element_by_xpath(self.MAIN_TEXT)
+        action = ActionChains(self.driver)
+        action.click(main_text_field)
+        action.send_keys(main_text)
+        action.perform()
 
     def submit(self):
         self.driver.find_element_by_xpath(self.CREATE_BUTTON).click()
+
+
+class TopicPage(Page):
+    @property
+    def topic(self):
+        return Topic(self.driver)
 
 
 class Topic(Component):
@@ -64,3 +77,9 @@ class Topic(Component):
     def delete(self):
         self.driver.find_element_by_xpath(self.DELETE_BUTTON).click()
         self.driver.find_element_by_xpath(self.DELETE_BUTTON_CONFIRM).click()
+
+
+class BlogPage(Page):
+    @property
+    def topic(self):
+        return Topic(self.driver)
