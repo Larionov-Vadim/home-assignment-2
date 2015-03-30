@@ -1,30 +1,22 @@
 # coding: utf-8
-
 import os
 import unittest
 from pages.topic_page import CreatePage, CreateForm, TopicPage, BlogPage
 from time import sleep
 from selenium.webdriver import DesiredCapabilities, Remote
 from selenium import webdriver
+from selenium.webdriver import ActionChains
+
+__author__ = 'vadim'
+
 
 class CreateTopicTestCase(unittest.TestCase):
     BLOG = 'Флудилка'
 
     def setUp(self):
-        # browser = os.environ.get('TTHA2BROWSER', 'CHROME')
-        # self.driver = Remote(
-        #     command_executor='http://127.0.0.1:4444/wd/hub',
-        #     desired_capabilities=getattr(DesiredCapabilities, browser)
-        # )
-        self.driver = webdriver.Firefox()
-        self.create_page = CreatePage(self.driver)
-        self.create_page.open()
-
-        # Authorization
-        self.create_page.login()
-        self.create_page.find_username()
-
-        self.create_page.open()
+        self.create_page = CreatePage()
+        self.create_page.open_with_authorization()
+        self.driver = self.create_page.get_driver()
 
     def tearDown(self):
         self.create_page.close()
@@ -34,29 +26,110 @@ class CreateTopicTestCase(unittest.TestCase):
         short_text = u'Короткий текст short text'
         main_text = u'Основной текст main text'
 
-        create_form = CreateForm(self.driver)
-        create_form.blog_select_open()
-        create_form.blog_select_set_option(self.BLOG)
-        create_form.set_title(title)
-        create_form.set_short_text(short_text)
-        create_form.set_main_text(main_text)
-        create_form.submit()
+        self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
+        self.create_page.submit_created_topic()
 
-        topic_page = TopicPage(self.driver)
-        topic_title = unicode(topic_page.topic.get_title())
-        topic_text = unicode(topic_page.topic.get_text())
-        print "TOPIC TEXT"
-        print(topic_text)
-        self.assertEqual(title, topic_title)
-        sleep(7)
-        self.assertEqual(short_text, topic_text)
-        sleep(4)
-        topic_page.topic.open_blog()
+        topic = TopicPage(self.driver).topic
+        self.assertEqual(topic.get_title(), title)
+        self.assertEqual(topic.get_text(), main_text)
 
-        blog_page = BlogPage(self.driver)
-        blog_page.topic.delete()
-        topic_title = unicode(blog_page.topic.get_title())
-        topic_text = unicode(blog_page.topic.get_text())
-        self.assertNotEqual(title, topic_title)
-        self.assertNotEqual(short_text, topic_text)
+        topic.open_blog()
+        blog = BlogPage(self.driver).blog
+        self.assertEqual(blog.get_title(), title)
+        self.assertEqual(blog.get_text(), short_text)
+        topic.delete()
 
+        self.assertNotEqual(blog.get_title(), title)
+        self.assertNotEqual(blog.get_text(), short_text)
+
+    def test_bold_text(self):
+        title = u'Title test check bold text'
+        short_text = u'Bold short text'
+        main_text = u'Bold main text'
+
+        expected_short_text = '<strong>' + short_text + '</strong>'
+        expected_main_text = '<strong>' + main_text + '</strong>'
+
+        self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
+        self.create_page.select_bold_short_text()
+        self.create_page.select_bold_main_text()
+        self.create_page.submit_created_topic()
+
+        topic = TopicPage(self.driver).topic
+        self.assertEqual(topic.get_title(), title)
+        self.assertEqual(topic.get_inner_html_text(), expected_main_text)
+
+        topic.open_blog()
+        blog = BlogPage(self.driver).blog
+        self.assertEqual(blog.get_title(), title)
+        self.assertEqual(blog.get_inner_html_text(), expected_short_text)
+        topic.delete()
+
+    def test_italic_text(self):
+        title = u'Title test check italic text'
+        short_text = u'Italic short text'
+        main_text = u'Italic main text'
+
+        expected_short_text = '<em>' + short_text + '</em>'
+        expected_main_text = '<em>' + main_text + '</em>'
+
+        self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
+        self.create_page.select_italic_short_text()
+        self.create_page.select_italic_main_text()
+        self.create_page.submit_created_topic()
+
+        topic = TopicPage(self.driver).topic
+        self.assertEqual(topic.get_title(), title)
+        self.assertEqual(topic.get_inner_html_text(), expected_main_text)
+
+        topic.open_blog()
+        blog = BlogPage(self.driver).blog
+        self.assertEqual(blog.get_title(), title)
+        self.assertEqual(blog.get_inner_html_text(), expected_short_text)
+        topic.delete()
+
+    def test_quote(self):
+        title = u'Title, проверка цитирования'
+        short_text = u'Цитируемый короткий текст, short text'
+        main_text = u'Цитируемый основной текст, main text'
+
+        expected_short_text = '&gt; ' + short_text
+        expected_main_text = '&gt; ' + main_text
+
+        self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
+        self.create_page.select_quote_short_text()
+        self.create_page.select_quote_main_text()
+        self.create_page.submit_created_topic()
+
+        topic = TopicPage(self.driver).topic
+        self.assertEqual(topic.get_title(), title)
+        self.assertEqual(topic.get_inner_html_text(), expected_main_text)
+
+        topic.open_blog()
+        blog = BlogPage(self.driver).blog
+        self.assertEqual(blog.get_title(), title)
+        self.assertEqual(blog.get_inner_html_text(), expected_short_text)
+        topic.delete()
+
+    def test_list(self):
+        title = u'Title, проверка цитирования'
+        short_text = u'Цитируемый короткий текст, short text'
+        main_text = u'Цитируемый основной текст, main text'
+
+        expected_short_text = '&gt; ' + short_text
+        expected_main_text = '&gt; ' + main_text
+
+        self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
+        self.create_page.select_quote_short_text()
+        self.create_page.select_quote_main_text()
+        self.create_page.submit_created_topic()
+
+        topic = TopicPage(self.driver).topic
+        self.assertEqual(topic.get_title(), title)
+        self.assertEqual(topic.get_inner_html_text(), expected_main_text)
+
+        topic.open_blog()
+        blog = BlogPage(self.driver).blog
+        self.assertEqual(blog.get_title(), title)
+        self.assertEqual(blog.get_inner_html_text(), expected_short_text)
+        topic.delete()

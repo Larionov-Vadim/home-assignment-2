@@ -2,16 +2,30 @@
 import urlparse
 from selenium.webdriver.support.wait import WebDriverWait
 import config
-
+import os
 from selenium import webdriver
 from component import Component
+from selenium.webdriver import DesiredCapabilities, Remote
+
+__author__ = 'vadim'
+
 
 class Page(object):
     BASE_URL = 'http://ftest.stud.tech-mail.ru'
     PATH = ''
 
-    def __init__(self, driver):
-        self.driver = driver
+    def __init__(self, driver=None):
+        if driver is None:
+            browser = os.environ.get('TTHA2BROWSER', 'FIREFOX')
+            self.driver = Remote(
+                command_executor='http://127.0.0.1:4444/wd/hub',
+                desired_capabilities=getattr(DesiredCapabilities, browser)
+            )
+        else:
+            self.driver = driver
+
+    def get_driver(self):
+        return self.driver
 
     def open(self):
         url = urlparse.urljoin(self.BASE_URL, self.PATH)
@@ -27,6 +41,7 @@ class Page(object):
         auth_form.set_login(config.USEREMAIL)
         auth_form.set_password(config.PASSWORD)
         auth_form.submit()
+        return self.find_username()
 
     def find_username(self):
         return TopMenu(self.driver).get_username()
