@@ -1,11 +1,6 @@
 # coding: utf-8
-import os
 import unittest
-from pages.topic_page import CreatePage, CreateForm, TopicPage, BlogPage
-from time import sleep
-from selenium.webdriver import DesiredCapabilities, Remote
-from selenium import webdriver
-from selenium.webdriver import ActionChains
+from pages.topic_page import CreatePage, TopicPage, BlogPage
 
 __author__ = 'vadim'
 
@@ -27,7 +22,7 @@ class CreateTopicTestCase(unittest.TestCase):
         main_text = u'Основной текст main text'
 
         self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
-        self.create_page.submit_created_topic()
+        self.create_page.form.submit()
 
         topic = TopicPage(self.driver).topic
         self.assertEqual(topic.get_title(), title)
@@ -47,68 +42,59 @@ class CreateTopicTestCase(unittest.TestCase):
         short_text = u'Bold short text'
         main_text = u'Bold main text'
 
-        expected_short_text = '<strong>' + short_text + '</strong>'
-        expected_main_text = '<strong>' + main_text + '</strong>'
+        expected_tag = '<strong>'
 
         self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
-        self.create_page.select_bold_short_text()
-        self.create_page.select_bold_main_text()
-        self.create_page.submit_created_topic()
+        self.create_page.form.select_short_text()
+        self.create_page.form.bold_short_text_click()
+        self.create_page.form.select_main_text()
+        self.create_page.form.bold_main_text_click()
+        self.create_page.form.submit()
 
         topic = TopicPage(self.driver).topic
         self.assertEqual(topic.get_title(), title)
-        self.assertEqual(topic.get_inner_html_text(), expected_main_text)
+        self.assertIn(expected_tag, topic.get_inner_html_content())
 
         topic.open_blog()
         blog = BlogPage(self.driver).blog
         self.assertEqual(blog.get_title(), title)
-        self.assertEqual(blog.get_inner_html_text(), expected_short_text)
+        self.assertIn(expected_tag, blog.get_inner_html_content())
         topic.delete()
 
-    def test_italic_text(self):
+    def test_italic_short_text(self):
         title = u'Title test check italic text'
         short_text = u'Italic short text'
-        main_text = u'Italic main text'
+        main_text = u'ignore'
 
-        expected_short_text = '<em>' + short_text + '</em>'
-        expected_main_text = '<em>' + main_text + '</em>'
+        expected_tag = '<em>'
 
         self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
-        self.create_page.select_italic_short_text()
-        self.create_page.select_italic_main_text()
-        self.create_page.submit_created_topic()
+        self.create_page.form.select_short_text()
+        self.create_page.form.italic_short_text_click()
+        self.create_page.form.submit()
 
         topic = TopicPage(self.driver).topic
-        self.assertEqual(topic.get_title(), title)
-        self.assertEqual(topic.get_inner_html_text(), expected_main_text)
-
         topic.open_blog()
         blog = BlogPage(self.driver).blog
-        self.assertEqual(blog.get_title(), title)
-        self.assertEqual(blog.get_inner_html_text(), expected_short_text)
+        self.assertIn(expected_tag, blog.get_inner_html_content())
         topic.delete()
 
-    def test_quote(self):
+    def test_quote_short_text(self):
         title = u'Title, проверка цитирования'
         short_text = u'Цитируемый короткий текст, short text'
-        main_text = u'Цитируемый основной текст, main text'
+        main_text = u'ignore'
 
-        expected_short_text = '&gt; ' + short_text
-        expected_main_text = '&gt; ' + main_text
+        expected_tag = '&gt;'
 
         self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
-        self.create_page.select_quote_short_text()
-        self.create_page.select_quote_main_text()
-        self.create_page.submit_created_topic()
+        self.create_page.form.select_short_text()
+        self.create_page.form.quote_short_text_click()
+        self.create_page.form.submit()
 
         topic = TopicPage(self.driver).topic
-        self.assertEqual(topic.get_title(), title)
-        self.assertEqual(topic.get_inner_html_text(), expected_main_text)
-
         topic.open_blog()
         blog = BlogPage(self.driver).blog
-        self.assertEqual(blog.get_title(), title)
-        self.assertEqual(blog.get_inner_html_text(), expected_short_text)
+        self.assertIn(expected_tag, blog.get_inner_html_content())
         topic.delete()
 
     def test_list_with_num_and_bold_main_text(self):
@@ -120,21 +106,22 @@ class CreateTopicTestCase(unittest.TestCase):
 
         self.create_page.form.list_with_num_main_text_click()
         self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
-        self.create_page.select_bold_main_text()
-        self.create_page.submit_created_topic()
+        self.create_page.form.select_main_text()
+        self.create_page.form.bold_main_text_click()
+        self.create_page.form.submit()
 
         topic = TopicPage(self.driver).topic
         self.assertEqual(topic.get_inner_html_text(), expected_main_text)
         topic.delete()
 
-    def test_add_link(self):
+    def test_add_link_main_text(self):
         title = u'Title'
         short_text = u'ignore short text'
         main_text = u''
 
         self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
         self.create_page.form.add_link_to_main_text(u'http://tech-mail.ru', u'Технопарк')
-        self.create_page.submit_created_topic()
+        self.create_page.form.submit()
 
         topic = TopicPage(self.driver).topic
         self.assertIn('href="http://tech-mail.ru"', topic.get_inner_html_content())

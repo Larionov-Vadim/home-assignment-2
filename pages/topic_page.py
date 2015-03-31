@@ -1,13 +1,10 @@
 # coding: utf-8
 from selenium.webdriver import ActionChains
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions
-from selenium.selenium import selenium
-from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 from base import Page
 from component import Component
+from actions import Actions
 
 __author__ = 'vadim'
 
@@ -31,49 +28,6 @@ class CreatePage(Page):
         create_form.set_title(title)
         create_form.set_short_text(short_text)
         create_form.set_main_text(main_text)
-
-    def submit_created_topic(self):
-        self.form.submit()
-
-    def select_bold_short_text(self):
-        self.form.select_short_text()
-        self.form.bold_short_text_click()
-
-    def select_bold_main_text(self):
-        self.form.select_main_text()
-        self.form.bold_main_text_click()
-
-    def select_italic_short_text(self):
-        self.form.select_short_text()
-        self.form.italic_short_text_click()
-
-    def select_italic_main_text(self):
-        self.form.select_main_text()
-        self.form.italic_main_text_click()
-
-    def select_quote_short_text(self):
-        self.form.select_short_text()
-        self.form.quote_short_text_click()
-
-    def select_quote_main_text(self):
-        self.form.select_main_text()
-        self.form.quote_main_text_click()
-
-    def select_list_short_text(self):
-        self.form.select_short_text()
-        self.form.list_short_text_click()
-
-    def select_list_main_text(self):
-        self.form.select_main_text()
-        self.form.list_main_text_click()
-
-    def select_list_with_num_short_text(self):
-        self.form.select_short_text()
-        self.form.list_with_num_short_text_click()
-
-    def select_list_with_num_main_text(self):
-        self.form.select_main_text()
-        self.form.list_with_num_main_text_click()
 
 
 class CreateForm(Component):
@@ -117,6 +71,7 @@ class CreateForm(Component):
     def submit(self):
         self.driver.find_element_by_xpath(self.CREATE_BUTTON).click()
 
+    # <Доступ по клику к элементам>
     def bold_short_text_click(self):
         self.driver.find_element_by_xpath(self.BOLD_SHORT_TEXT).click()
 
@@ -146,40 +101,29 @@ class CreateForm(Component):
 
     def list_with_num_main_text_click(self):
         self.driver.find_element_by_xpath(self.LIST_WITH_NUM_MAIN_TEXT).click()
+    # </Доступ по клику к элементам>
 
+    # <Выделение текста>
     def select_main_text(self):
-        ActionChains(self.driver).\
-            click(self.driver.find_element_by_xpath(self.MAIN_TEXT)).\
-            key_down(Keys.CONTROL).\
-            key_down("a").\
-            key_up(Keys.CONTROL).\
-            perform()
+        Actions(self.driver).select_text(By.XPATH, self.MAIN_TEXT)
 
     def select_short_text(self):
-        ActionChains(self.driver).\
-            click(self.driver.find_element_by_xpath(self.SHORT_TEXT)).\
-            key_down(Keys.CONTROL).\
-            key_down("a").\
-            key_up(Keys.CONTROL).\
-            perform()
+        Actions(self.driver).select_text(By.XPATH, self.SHORT_TEXT)
+    # </Выделение текста>
 
     def add_link_to_short_text(self, url, name):
-        self.driver.find_element_by_xpath(self.ADD_LINK_SHORT_TEXT).click()
-        WebDriverWait(self.driver, timeout=30, poll_frequency=0.1).\
-            until(expected_conditions.alert_is_present())
-        alert = self.driver.switch_to.alert
-        alert.send_keys(url)
-        alert.accept()
-        ActionChains(self.driver).send_keys(name).perform()
+        actions = Actions(self.driver)
+        actions.click_to_element(By.XPATH, self.ADD_LINK_SHORT_TEXT)
+        actions.wait_alert()
+        actions.set_text_to_alert(url)
+        actions.send_keys_and_perform(name)
 
     def add_link_to_main_text(self, url, name):
-        self.driver.find_element_by_xpath(self.ADD_LINK_MAIN_TEXT).click()
-        WebDriverWait(self.driver, timeout=30, poll_frequency=0.1).\
-            until(expected_conditions.alert_is_present())
-        alert = self.driver.switch_to.alert
-        alert.send_keys(url)
-        alert.accept()
-        ActionChains(self.driver).send_keys(name).perform()
+        actions = Actions(self.driver)
+        actions.click_to_element(By.XPATH, self.ADD_LINK_MAIN_TEXT)
+        actions.wait_alert()
+        actions.set_text_to_alert(url)
+        actions.send_keys_and_perform(name)
 
 
 class TopicPage(Page):
@@ -191,48 +135,37 @@ class TopicPage(Page):
 class Topic(Component):
     TITLE = '//*[@class="topic-title"]/a'
     TEXT = '//*[@class="topic-content text"]/p'
-    LIST = '//*[@class="topic-content text"]/ul'
+    # LIST = '//*[@class="topic-content text"]/ul'
     BLOG = '//*[@class="topic-blog"]'
     DELETE_BUTTON = '//a[@class="actions-delete"]'
     DELETE_BUTTON_CONFIRM = '//input[@value="Удалить"]'
     CONTENT = '//*[@class="topic-content text"]'
 
     def get_title(self):
-        return WebDriverWait(self.driver, 30, 0.1).until(
-            lambda d: d.find_element_by_xpath(self.TITLE).text
-        )
+        return Actions(self.driver).wait_and_get_text(By.XPATH, self.TITLE)
 
     def get_text(self):
-        return WebDriverWait(self.driver, 30, 0.1).until(
-            lambda d: d.find_element_by_xpath(self.TEXT).text
-        )
+        return Actions(self.driver).wait_and_get_text(By.XPATH, self.TEXT)
 
-    def get_list(self):
-        return WebDriverWait(self.driver, 30, 0.1).until(
-            lambda d: d.find_element_by_xpath(self.LIST).text
-        )
+    # def get_list(self):
+    #     return Actions(self.driver).wait_and_get_text(By.XPATH, self.LIST)
 
     def open_blog(self):
-        self.driver.find_element_by_xpath(self.BLOG).click()
+        Actions(self.driver).click_to_element(By.XPATH, self.BLOG)
 
     def delete(self):
-        self.driver.find_element_by_xpath(self.DELETE_BUTTON).click()
-        self.driver.find_element_by_xpath(self.DELETE_BUTTON_CONFIRM).click()
+        actions = Actions(self.driver)
+        actions.click_to_element(By.XPATH, self.DELETE_BUTTON)
+        actions.click_to_element(By.XPATH, self.DELETE_BUTTON_CONFIRM)
 
     def get_inner_html_text(self):
-        return WebDriverWait(self.driver, 30, 0.1).until(
-            lambda d: d.find_element_by_xpath(self.TEXT).get_attribute('innerHTML')
-        )
+        return Actions(self.driver).wait_and_get_attribute(By.XPATH, self.TEXT, 'innerHTML')
 
-    def get_inner_html_list(self):
-        return WebDriverWait(self.driver, 30, 0.1).until(
-            lambda d: d.find_element_by_xpath(self.LIST).get_attribute('innerHTML')
-        )
+    # def get_inner_html_list(self):
+    #     return Actions(self.driver).wait_and_get_attribute(By.XPATH, self.LIST, 'innerHTML')
 
     def get_inner_html_content(self):
-        return WebDriverWait(self.driver, 30, 0.1).until(
-            lambda d: d.find_element_by_xpath(self.CONTENT).get_attribute('innerHTML')
-        )
+        return Actions(self.driver).wait_and_get_attribute(By.XPATH, self.CONTENT, 'innerHTML')
 
 
 class BlogPage(Page):

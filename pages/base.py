@@ -1,7 +1,7 @@
 # coding: utf-8
 import urlparse
 from selenium.webdriver.support.wait import WebDriverWait
-import config
+import conf
 import os
 from selenium import webdriver
 from component import Component
@@ -38,8 +38,8 @@ class Page(object):
     def login(self):
         auth_form = AuthForm(self.driver)
         auth_form.open_form()
-        auth_form.set_login(config.USEREMAIL)
-        auth_form.set_password(config.PASSWORD)
+        auth_form.set_login(conf.USEREMAIL)
+        auth_form.set_password(conf.PASSWORD)
         auth_form.submit()
         return self.find_username()
 
@@ -70,6 +70,6 @@ class TopMenu(Component):
     USERNAME = '//a[@class="username"]'
 
     def get_username(self):
-        return WebDriverWait(self.driver, 30, 0.1).until(
+        return WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
             lambda d: d.find_element_by_xpath(self.USERNAME).text
         )
