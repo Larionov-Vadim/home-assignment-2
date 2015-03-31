@@ -6,4 +6,4 @@ __author__ = 'vadim'
 
 USERNAME = u'Настасья Коробочка'
 USEREMAIL = 'ftest3@tech-mail.ru'
-PASSWORD = 'Pa$$w0rD-3'
+PASSWORD = os.environ['TTHA2PASSWORD']

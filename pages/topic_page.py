@@ -2,6 +2,7 @@
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 from selenium.selenium import selenium
 from selenium import webdriver
 
@@ -93,6 +94,8 @@ class CreateForm(Component):
     LIST_MAIN_TEXT = '(//*[@title="Список"])[2]'
     LIST_WITH_NUM_SHORT_TEXT = '(//*[@title="Список с нумерацией"])[1]'
     LIST_WITH_NUM_MAIN_TEXT = '(//*[@title="Список с нумерацией"])[2]'
+    ADD_LINK_SHORT_TEXT = '(//*[@title="Вставить ссылку"])[1]'
+    ADD_LINK_MAIN_TEXT = '(//*[@title="Вставить ссылку"])[2]'
 
     def blog_select_open(self):
         self.driver.find_element_by_xpath(self.BLOGSELECT).click()
@@ -160,6 +163,24 @@ class CreateForm(Component):
             key_up(Keys.CONTROL).\
             perform()
 
+    def add_link_to_short_text(self, url, name):
+        self.driver.find_element_by_xpath(self.ADD_LINK_SHORT_TEXT).click()
+        WebDriverWait(self.driver, timeout=30, poll_frequency=0.1).\
+            until(expected_conditions.alert_is_present())
+        alert = self.driver.switch_to.alert
+        alert.send_keys(url)
+        alert.accept()
+        ActionChains(self.driver).send_keys(name).perform()
+
+    def add_link_to_main_text(self, url, name):
+        self.driver.find_element_by_xpath(self.ADD_LINK_MAIN_TEXT).click()
+        WebDriverWait(self.driver, timeout=30, poll_frequency=0.1).\
+            until(expected_conditions.alert_is_present())
+        alert = self.driver.switch_to.alert
+        alert.send_keys(url)
+        alert.accept()
+        ActionChains(self.driver).send_keys(name).perform()
+
 
 class TopicPage(Page):
     @property
@@ -170,9 +191,11 @@ class TopicPage(Page):
 class Topic(Component):
     TITLE = '//*[@class="topic-title"]/a'
     TEXT = '//*[@class="topic-content text"]/p'
+    LIST = '//*[@class="topic-content text"]/ul'
     BLOG = '//*[@class="topic-blog"]'
     DELETE_BUTTON = '//a[@class="actions-delete"]'
     DELETE_BUTTON_CONFIRM = '//input[@value="Удалить"]'
+    CONTENT = '//*[@class="topic-content text"]'
 
     def get_title(self):
         return WebDriverWait(self.driver, 30, 0.1).until(
@@ -182,6 +205,11 @@ class Topic(Component):
     def get_text(self):
         return WebDriverWait(self.driver, 30, 0.1).until(
             lambda d: d.find_element_by_xpath(self.TEXT).text
+        )
+
+    def get_list(self):
+        return WebDriverWait(self.driver, 30, 0.1).until(
+            lambda d: d.find_element_by_xpath(self.LIST).text
         )
 
     def open_blog(self):
@@ -194,6 +222,16 @@ class Topic(Component):
     def get_inner_html_text(self):
         return WebDriverWait(self.driver, 30, 0.1).until(
             lambda d: d.find_element_by_xpath(self.TEXT).get_attribute('innerHTML')
+        )
+
+    def get_inner_html_list(self):
+        return WebDriverWait(self.driver, 30, 0.1).until(
+            lambda d: d.find_element_by_xpath(self.LIST).get_attribute('innerHTML')
+        )
+
+    def get_inner_html_content(self):
+        return WebDriverWait(self.driver, 30, 0.1).until(
+            lambda d: d.find_element_by_xpath(self.CONTENT).get_attribute('innerHTML')
         )
 
 

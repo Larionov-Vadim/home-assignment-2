@@ -111,25 +111,32 @@ class CreateTopicTestCase(unittest.TestCase):
         self.assertEqual(blog.get_inner_html_text(), expected_short_text)
         topic.delete()
 
-    def test_list(self):
-        title = u'Title, проверка цитирования'
-        short_text = u'Цитируемый короткий текст, short text'
-        main_text = u'Цитируемый основной текст, main text'
+    def test_list_with_num_and_bold_main_text(self):
+        title = u'Список с нумерацией, выделенный жирным текстом'
+        short_text = u'ignore short text'
+        main_text = u'TODO\n123'
 
-        expected_short_text = '&gt; ' + short_text
-        expected_main_text = '&gt; ' + main_text
+        expected_main_text = '<strong>1. TODO<br>\n2. 123</strong>'
 
+        self.create_page.form.list_with_num_main_text_click()
         self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
-        self.create_page.select_quote_short_text()
-        self.create_page.select_quote_main_text()
+        self.create_page.select_bold_main_text()
         self.create_page.submit_created_topic()
 
         topic = TopicPage(self.driver).topic
-        self.assertEqual(topic.get_title(), title)
         self.assertEqual(topic.get_inner_html_text(), expected_main_text)
+        topic.delete()
 
-        topic.open_blog()
-        blog = BlogPage(self.driver).blog
-        self.assertEqual(blog.get_title(), title)
-        self.assertEqual(blog.get_inner_html_text(), expected_short_text)
+    def test_add_link(self):
+        title = u'Title'
+        short_text = u'ignore short text'
+        main_text = u''
+
+        self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
+        self.create_page.form.add_link_to_main_text(u'http://tech-mail.ru', u'Технопарк')
+        self.create_page.submit_created_topic()
+
+        topic = TopicPage(self.driver).topic
+        self.assertIn('href="http://tech-mail.ru"', topic.get_inner_html_content())
+        self.assertEqual(u'Технопарк', topic.get_text())
         topic.delete()
