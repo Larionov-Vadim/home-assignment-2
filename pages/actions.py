@@ -5,23 +5,16 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium import webdriver
 from component import Component
-
 import conf
 
 __author__ = 'vadim'
 
-# webdriver.Firefox().find_element_by_xpath().send_keys()
 
 class Actions(Component):
     def select_text(self, by=By.XPATH, value=None):
-        ActionChains(self.driver).\
-            click(self.driver.find_element(by, value)).\
-            key_down(Keys.CONTROL).\
-            send_keys("a").\
-            key_up(Keys.CONTROL).\
-            perform()
+        ActionChains(self.driver).click(self.driver.find_element(by, value)).\
+            key_down(Keys.CONTROL).send_keys("a").key_up(Keys.CONTROL).perform()
 
     def set_text_to_alert(self, text):
         alert = self.driver.switch_to.alert
@@ -52,6 +45,11 @@ class Actions(Component):
             lambda d: d.find_element(by, value).get_attribute(attr)
         )
 
+    def wait_until_text_not_empty(self, by, value):
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            lambda d: d.find_element(by, value).text != ''
+        )
+
     def execute_script(self, script):
         self.driver.execute_script(script)
 
@@ -74,7 +72,6 @@ class Actions(Component):
         try:
             while True:
                 new_value = '(' + value + ')[' + str(index) + ']'
-                print 'value ' + str(value)
                 elements.append(self.driver.find_element(by, new_value))
                 index += 1
         except NoSuchElementException:
@@ -85,3 +82,14 @@ class Actions(Component):
         for x in elements:
             text_list.append(x.text)
         return text_list
+
+    def submit(self, by=By.XPATH, value=None):
+        self.driver.find_element(by, value).submit()
+
+    def wait_and_click(self, by=By.XPATH, value=None):
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            lambda d: d.find_element(by, value).click()
+        )
+
+    def get_text(self, by=By.XPATH, value=None):
+        return self.driver.find_element(by, value).text

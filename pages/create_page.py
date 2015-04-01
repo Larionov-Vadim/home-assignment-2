@@ -1,19 +1,18 @@
 # coding: utf-8
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.wait import WebDriverWait
-import time
-
-from base import Page
 from component import Component
-from actions import Actions
+from pages.actions import Actions
+from pages.base import Page
 
 __author__ = 'vadim'
 
 
 class CreatePage(Page):
     PATH = '/blog/topic/create/'
+    INFO_BLOCK = '//*[@id="block_blog_info"]'
+    ERRORS_MSG = '//*[@class="system-message-error"]'
 
     @property
     def form(self):
@@ -32,10 +31,22 @@ class CreatePage(Page):
         create_form.set_short_text(short_text)
         create_form.set_main_text(main_text)
 
+    def get_info(self):
+        return Actions(self.driver).wait_and_get_text(By.XPATH, self.INFO_BLOCK)
+
+    def has_errors(self):
+        try:
+            self.driver.find_element_by_xpath(self.ERRORS_MSG).is_displayed()
+            return True
+        except NoSuchElementException:
+            return False
+
 
 class CreateForm(Component):
+    # <locators>
     BLOGSELECT = '//a[@class="chzn-single"]'
     OPTION = '//li[text()="{}"]'
+    OPTION_BLOG_ID = '//*[@id="id_blog_chzn_o_{}"]'
     TITLE = '//input[@name="title"]'
     SHORT_TEXT = '(//*[@class="CodeMirror-scroll"])[1]'     # xpath short_text
     MAIN_TEXT = '(//*[@class="CodeMirror-scroll"])[2]'      # xpath main_text
@@ -63,17 +74,27 @@ class CreateForm(Component):
 
     SEARCH_USER_POPUP = './/*[@id="search-user-login-popup"]'
 
-    SHOW_UPLOAD_PHOTO_CONTAINER_SCRIPT = '$(".markdown-upload-photo-container").show()'
-
     ADD_POLL_CHECKBOX = '//*[@class="input-checkbox add-poll"]'
     QUESTION_POLL = '//*[@id="id_question"]'
+    ANSWEAR_POLL = '(//*[@id="id_form-{}-answer"])'
     ADD_OPTION_ANSWER = '//*[contains(text(),"Добавить вариант")]'
+    DELETE_OPTION_ANSWER = '//*[@title="Удалить" and not(@style="display: none;")]'
+
+    FORBID_COMMENT = '//*[@id="id_forbid_comment"]'
+    # </locators>
+
+    # <scripts>
+    SHOW_UPLOAD_PHOTO_CONTAINER_SCRIPT = '$(".markdown-upload-photo-container").show()'
+    # </scripts>
 
     def blog_select_open(self):
         self.driver.find_element_by_xpath(self.BLOGSELECT).click()
 
     def blog_select_set_option(self, option_text):
         self.driver.find_element_by_xpath(self.OPTION.format(option_text)).click()
+
+    def blog_select_by_id(self, option_id):
+        self.driver.find_element_by_xpath(self.OPTION_BLOG_ID.format(option_id)).click()
 
     def set_title(self, title):
         self.driver.find_element_by_xpath(self.TITLE).send_keys(title)
@@ -122,6 +143,16 @@ class CreateForm(Component):
 
     def add_poll_checkbox_click(self):
         Actions(self.driver).click_to_element(By.XPATH, self.ADD_POLL_CHECKBOX)
+
+    def add_additional_answer_click(self):
+        Actions(self.driver).click_to_element(By.XPATH, self.ADD_OPTION_ANSWER)
+
+    def delete_additional_answer_click(self):
+        Actions(self.driver).click_to_element(By.XPATH, self.DELETE_OPTION_ANSWER)
+
+    def forbid_comment_click(self):
+        Actions(self.driver).click_to_element(By.XPATH, self.FORBID_COMMENT)
+
     # </Доступ по клику к элементам>
 
     # <Выделение текста>
@@ -164,8 +195,7 @@ class CreateForm(Component):
         actions = Actions(self.driver)
         actions.execute_script(self.SHOW_UPLOAD_PHOTO_CONTAINER_SCRIPT)
         actions.send_keys_to_elem_and_perform(By.XPATH, self.INPUT_FILEDATA_MAIN_TEXT, path_to_file)
-        # TODO
-        time.sleep(5)
+        actions.wait_until_text_not_empty(By.XPATH, self.MAIN_TEXT)
 
     def add_poll(self, question, *answers):
         actions = Actions(self.driver)
@@ -174,58 +204,24 @@ class CreateForm(Component):
 
         count = len(answers)
         for index in range(count):
-            answer_xpath = self.get_xpath_number_answer(index)
+            answer_xpath = self.ANSWEAR_POLL.format(index)
             if not actions.element_is_exist(By.XPATH, answer_xpath):
                 answer_xpath += '[2]'
                 actions.click_and_wait(By.XPATH, self.ADD_OPTION_ANSWER, By.XPATH, answer_xpath)
             actions.send_keys_to_elem_and_perform(By.XPATH, answer_xpath, answers[index])
 
-    def get_xpath_number_answer(self, number):
-        return '(.//*[@id="id_form-' + str(number) + '-answer"])'
-
-
-class TopicPage(Page):
-    @property
-    def topic(self):
-        return Topic(self.driver)
-
-
-class Topic(Component):
-    TITLE = '//*[@class="topic-title"]/a'
-    TEXT = '//*[@class="topic-content text"]/p'
-    BLOG = '//*[@class="topic-blog"]'
-    DELETE_BUTTON = '//a[@class="actions-delete"]'
-    DELETE_BUTTON_CONFIRM = '//input[@value="Удалить"]'
-    CONTENT = '//*[@class="topic-content text"]'
-    POLL_ANSWER = './/*[@class="poll-vote"]/li'
-
-    def get_title(self):
-        return Actions(self.driver).wait_and_get_text(By.XPATH, self.TITLE)
-
-    def get_text(self):
-        return Actions(self.driver).wait_and_get_text(By.XPATH, self.TEXT)
-
-    def open_blog(self):
-        Actions(self.driver).click_to_element(By.XPATH, self.BLOG)
-
-    def delete(self):
+    def add_user_to_short_text(self, name):
         actions = Actions(self.driver)
-        actions.click_to_element(By.XPATH, self.DELETE_BUTTON)
-        actions.click_to_element(By.XPATH, self.DELETE_BUTTON_CONFIRM)
+        actions.click_and_wait(By.XPATH, self.ADD_USER_SHORT_TEXT, By.XPATH, self.SEARCH_USER_POPUP)
+        self.driver.find_element_by_xpath(self.SEARCH_USER_POPUP).click()
+        actions.send_keys_to_elem_and_perform(By.XPATH, self.SEARCH_USER_POPUP, name)
+        choose_user = '//*[contains(text(), "' + name + '")]'
+        self.driver.find_element_by_xpath(choose_user).click()
 
-    def get_inner_html_text(self):
-        return Actions(self.driver).wait_and_get_attribute(By.XPATH, self.TEXT, 'innerHTML')
-
-    def get_inner_html_content(self):
-        return Actions(self.driver).wait_and_get_attribute(By.XPATH, self.CONTENT, 'innerHTML')
-
-    def get_poll_answers(self):
+    def add_user_to_main_text(self, name):
         actions = Actions(self.driver)
-        elements = actions.get_list_elements(By.XPATH, self.POLL_ANSWER)
-        return actions.get_list_text_from_list_elements(*elements)
-
-
-class BlogPage(Page):
-    @property
-    def blog(self):
-        return Topic(self.driver)
+        actions.click_and_wait(By.XPATH, self.ADD_USER_MAIN_TEXT, By.XPATH, self.SEARCH_USER_POPUP)
+        self.driver.find_element_by_xpath(self.SEARCH_USER_POPUP).click()
+        actions.send_keys_to_elem_and_perform(By.XPATH, self.SEARCH_USER_POPUP, name)
+        choose_user = '//*[contains(text(), "' + name + '")]'
+        self.driver.find_element_by_xpath(choose_user).click()

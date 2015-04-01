@@ -1,10 +1,9 @@
 # coding: utf-8
-import urlparse
-from selenium.webdriver.support.wait import WebDriverWait
-import conf
 import os
-from selenium import webdriver
+import conf
+import urlparse
 from component import Component
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import DesiredCapabilities, Remote
 
 __author__ = 'vadim'
