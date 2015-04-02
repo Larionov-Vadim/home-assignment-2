@@ -194,8 +194,9 @@ class CreateForm(Component):
     def upload_image_to_main_text(self, path_to_file):
         actions = Actions(self.driver)
         actions.execute_script(self.SHOW_UPLOAD_PHOTO_CONTAINER_SCRIPT)
+        actions.wait_until_elem_is_not_displayed(By.XPATH, self.INPUT_FILEDATA_MAIN_TEXT)
         actions.send_keys_to_elem_and_perform(By.XPATH, self.INPUT_FILEDATA_MAIN_TEXT, path_to_file)
-        actions.wait_until_text_not_empty(By.XPATH, self.MAIN_TEXT)
+        actions.wait_until_text_is_not_empty(By.XPATH, self.MAIN_TEXT)
 
     def add_poll(self, question, *answers):
         actions = Actions(self.driver)
@@ -224,4 +225,5 @@ class CreateForm(Component):
         self.driver.find_element_by_xpath(self.SEARCH_USER_POPUP).click()
         actions.send_keys_to_elem_and_perform(By.XPATH, self.SEARCH_USER_POPUP, name)
         choose_user = '//*[contains(text(), "' + name + '")]'
-        self.driver.find_element_by_xpath(choose_user).click()
+        actions.wait_and_click(By.XPATH, choose_user)
+        actions.wait_until_text_is_not_empty(By.XPATH, self.SHORT_TEXT)

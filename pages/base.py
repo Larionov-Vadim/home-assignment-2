@@ -15,7 +15,7 @@ class Page(object):
 
     def __init__(self, driver=None):
         if driver is None:
-            browser = os.environ.get('TTHA2BROWSER', 'FIREFOX')
+            browser = os.environ.get('TTHA2BROWSER', 'CHROME')
             self.driver = Remote(
                 command_executor='http://127.0.0.1:4444/wd/hub',
                 desired_capabilities=getattr(DesiredCapabilities, browser)

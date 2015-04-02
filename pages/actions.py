@@ -45,7 +45,7 @@ class Actions(Component):
             lambda d: d.find_element(by, value).get_attribute(attr)
         )
 
-    def wait_until_text_not_empty(self, by, value):
+    def wait_until_text_is_not_empty(self, by, value):
         WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
             lambda d: d.find_element(by, value).text != ''
         )
@@ -88,8 +88,14 @@ class Actions(Component):
 
     def wait_and_click(self, by=By.XPATH, value=None):
         WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
-            lambda d: d.find_element(by, value).click()
+            lambda d: d.find_element(by, value).is_displayed()
         )
+        self.driver.find_element(by, value).click()
 
     def get_text(self, by=By.XPATH, value=None):
         return self.driver.find_element(by, value).text
+
+    def wait_until_elem_is_not_displayed(self, by, value):
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            lambda d: d.find_element(by, value).is_displayed()
+        )

@@ -146,7 +146,7 @@ class CreateTopicTestCase(unittest.TestCase):
         self.assertIn(expected_src, blog.get_inner_html_content())
 
     def test_upload_image(self):
-        path_to_image = os.getcwdu() + u'/../images/image.png'
+        path_to_image = os.getcwdu() + u'/images/image.png'
         title = u'Загрузка изображения с локального компьютера'
 
         expected_tag = '<img'
