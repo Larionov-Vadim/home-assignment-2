@@ -1,6 +1,5 @@
 # coding: utf-8
 import os
-from time import sleep
 import unittest
 from pages.create_page import CreatePage
 from pages.topic_and_blog_page import TopicPage, BlogPage
@@ -104,19 +103,19 @@ class CreateTopicTestCase(unittest.TestCase):
         topic = TopicPage(self.driver).topic
         self.assertIn(expected_str, topic.get_inner_html_text())
 
-    # def test_bold_text(self):
-    #     title = u'Проверка жирного текста'
-    #     main_text = u'Жирный текст'
-    #
-    #     self.create_page.create_simple_topic(self.BLOG, title, main_text)
-    #     self.create_page.form.select_main_text()
-    #     self.create_page.form.bold_text_click()
-    #     self.create_page.form.submit()
-    #
-    #     expected_str = '<strong>' + main_text + '</strong>'
-    #
-    #     topic = TopicPage(self.driver).topic
-    #     self.assertIn(expected_str, topic.get_inner_html_text())
+    def test_bold_text(self):
+        title = u'Проверка жирного текста'
+        main_text = u'Жирный текст'
+
+        self.create_page.create_simple_topic(self.BLOG, title, main_text)
+        self.create_page.form.select_main_text()
+        self.create_page.form.bold_text_click()
+        self.create_page.form.submit()
+
+        expected_str = '<strong>' + main_text + '</strong>'
+
+        topic = TopicPage(self.driver).topic
+        self.assertIn(expected_str, topic.get_inner_html_text())
 
     def test_italic_text(self):
         title = u'Проверка курсива'
@@ -132,68 +131,68 @@ class CreateTopicTestCase(unittest.TestCase):
         topic = TopicPage(self.driver).topic
         self.assertIn(expected_str, topic.get_inner_html_text())
 
-    # def test_strikethrough_text(self):
-    #     title = u'Проверка перечеркнутого текста'
-    #     main_text = u'Этот текст будет зачеркнут'
-    #
-    #     self.create_page.create_simple_topic(self.BLOG, title, main_text)
-    #     self.create_page.form.select_main_text()
-    #     self.create_page.form.strikethrough_text_click()
-    #     self.create_page.form.submit()
-    #
-    #     expected_str = '<s>' + main_text + '</s>'
-    #
-    #     topic = TopicPage(self.driver).topic
-    #     self.assertIn(expected_str, topic.get_inner_html_text())
-    #
-    # def test_quote_text(self):
-    #     title = u'Проверка цитирования'
-    #     main_text = u'Цитата'
-    #
-    #     self.create_page.create_simple_topic(self.BLOG, title, main_text)
-    #     self.create_page.form.select_main_text()
-    #     self.create_page.form.quote_click()
-    #     self.create_page.form.submit()
-    #
-    #     expected_str = '<blockquote>' + main_text + '</blockquote>'
-    #
-    #     topic = TopicPage(self.driver).topic
-    #     self.assertIn(expected_str, topic.get_inner_html_text())
-    #
-    # def test_code_text(self):
-    #     title = u'Проверка тега <code>'
-    #     main_text = u'printf("test_code");'
-    #
-    #     self.create_page.create_simple_topic(self.BLOG, title, main_text)
-    #     self.create_page.form.select_main_text()
-    #     self.create_page.form.code_click()
-    #     self.create_page.form.submit()
-    #
-    #     expected_str = '<code>' + main_text + '</code>'
-    #
-    #     topic = TopicPage(self.driver).topic
-    #     self.assertIn(expected_str, topic.get_inner_html_text())
-    #
-    # def test_marked_list(self):
-    #     title = u'Проверка маркерованного списка'
-    #     first_node = u'Первая строка маркерованного списка'
-    #     second_node = u'Вторая строка маркерованного списка'
-    #     main_text = first_node + u'\n' + second_node
-    #
-    #     self.create_page.create_simple_topic(self.BLOG, title, main_text)
-    #     self.create_page.form.select_main_text()
-    #     self.create_page.form.list_click()
-    #     self.create_page.form.submit()
-    #
-    #     expected_tag = '<ul>'
-    #     expected_first_node = '<li>' + first_node + '</li>'
-    #     expected_second_node = '<li>' + second_node + '</li>'
-    #
-    #     topic = TopicPage(self.driver).topic
-    #     actual_inner_html = topic.get_inner_html_text()
-    #     self.assertIn(expected_tag, actual_inner_html)
-    #     self.assertIn(expected_first_node, actual_inner_html)
-    #     self.assertIn(expected_second_node, actual_inner_html)
+    def test_strikethrough_text(self):
+        title = u'Проверка перечеркнутого текста'
+        main_text = u'Этот текст будет зачеркнут'
+
+        self.create_page.create_simple_topic(self.BLOG, title, main_text)
+        self.create_page.form.select_main_text()
+        self.create_page.form.strikethrough_text_click()
+        self.create_page.form.submit()
+
+        expected_str = '<s>' + main_text + '</s>'
+
+        topic = TopicPage(self.driver).topic
+        self.assertIn(expected_str, topic.get_inner_html_text())
+
+    def test_quote_text(self):
+        title = u'Проверка цитирования'
+        main_text = u'Цитата'
+
+        self.create_page.create_simple_topic(self.BLOG, title, main_text)
+        self.create_page.form.select_main_text()
+        self.create_page.form.quote_click()
+        self.create_page.form.submit()
+
+        expected_str = '<blockquote>' + main_text + '</blockquote>'
+
+        topic = TopicPage(self.driver).topic
+        self.assertIn(expected_str, topic.get_inner_html_text())
+
+    def test_code_text(self):
+        title = u'Проверка тега <code>'
+        main_text = u'printf("test_code");'
+
+        self.create_page.create_simple_topic(self.BLOG, title, main_text)
+        self.create_page.form.select_main_text()
+        self.create_page.form.code_click()
+        self.create_page.form.submit()
+
+        expected_str = '<code>' + main_text + '</code>'
+
+        topic = TopicPage(self.driver).topic
+        self.assertIn(expected_str, topic.get_inner_html_text())
+
+    def test_marked_list(self):
+        title = u'Проверка маркерованного списка'
+        first_node = u'Первая строка маркерованного списка'
+        second_node = u'Вторая строка маркерованного списка'
+        main_text = first_node + u'\n' + second_node
+
+        self.create_page.create_simple_topic(self.BLOG, title, main_text)
+        self.create_page.form.select_main_text()
+        self.create_page.form.list_click()
+        self.create_page.form.submit()
+
+        expected_tag = '<ul>'
+        expected_first_node = '<li>' + first_node + '</li>'
+        expected_second_node = '<li>' + second_node + '</li>'
+
+        topic = TopicPage(self.driver).topic
+        actual_inner_html = topic.get_inner_html_text()
+        self.assertIn(expected_tag, actual_inner_html)
+        self.assertIn(expected_first_node, actual_inner_html)
+        self.assertIn(expected_second_node, actual_inner_html)
 
     def test_numbered_list(self):
         title = u'Проверка нумерованного списка'
@@ -245,23 +244,23 @@ class CreateTopicTestCase(unittest.TestCase):
         self.assertIn(expected_attr, inner_html)
         self.assertIn(user, inner_html)
 
-    # def test_add_poll(self):
-    #     title = u'Топик с опросом'
-    #     main_text = u'Опрос'
-    #
-    #     question = u'Сколько Вы видите вариантов ответа?'
-    #     expected_answers = [u'1', u'Два', u'3 жэ']
-    #
-    #     self.create_page.create_simple_topic(self.BLOG, title, main_text)
-    #     self.create_page.form.add_poll(question, *expected_answers)
-    #     self.create_page.form.submit()
-    #
-    #     topic = TopicPage(self.driver).topic
-    #     actual_answers = topic.get_poll_answers()
-    #     self.assertEqual(expected_answers, actual_answers)
+    def test_add_poll(self):
+        title = u'Топик с опросом'
+        main_text = u'Опрос'
+
+        question = u'Сколько Вы видите вариантов ответа?'
+        expected_answers = [u'1', u'Два', u'3 жэ']
+
+        self.create_page.create_simple_topic(self.BLOG, title, main_text)
+        self.create_page.form.add_poll(question, *expected_answers)
+        self.create_page.form.submit()
+
+        topic = TopicPage(self.driver).topic
+        actual_answers = topic.get_poll_answers()
+        self.assertEqual(expected_answers, actual_answers)
 
     def test_upload_image(self):
-        path_to_image = os.getcwdu() + u'/images/image.png'
+        path_to_image = unicode(os.path.dirname(__file__)) + u'/../images/image.png'
         title = u'Загрузка изображения с локального компьютера'
         align = u'left'
         description = u'Кот'
@@ -272,7 +271,6 @@ class CreateTopicTestCase(unittest.TestCase):
 
         self.create_page.create_simple_topic(self.BLOG, title, main_text=u'')
         self.create_page.form.upload_image(path_to_image, align, description)
-        sleep(4)
         self.create_page.form.submit()
 
         topic = TopicPage(self.driver).topic
@@ -327,46 +325,45 @@ class CreateTopicTestCase(unittest.TestCase):
         self.assertIn(expected_align, inner_html)
         self.assertIn(expected_description, inner_html)
 
+    def test_without_title(self):
+        main_text = u'Топик без заголовка'
 
-    # def test_without_title(self):
-    #     main_text = u'Топик без заголовка'
-    #
-    #     self.create_page.form.set_main_text(main_text)
-    #     self.create_page.form.submit()
-    #     self.assertTrue(self.create_page.has_errors())
-    #
-    # def test_without_main_text(self):
-    #     title = u'Tопик без основного текста'
-    #
-    #     self.create_page.form.blog_select_open()
-    #     self.create_page.form.blog_select_set_option(self.BLOG)
-    #     self.create_page.form.set_title(title)
-    #     self.create_page.form.submit()
-    #     self.assertTrue(self.create_page.has_errors())
-    #
-    # def test_empty_fields(self):
-    #     self.create_page.form.submit()
-    #     self.assertTrue(self.create_page.has_errors())
-    #
-    # def test_add_poll_with_empty_fields(self):
-    #     title = u'Топик с добавлением опроса, но без вопроса и вариантов'
-    #     main_text = u'main text'
-    #
-    #     self.create_page.create_simple_topic(self.BLOG, title, main_text)
-    #     self.create_page.form.add_poll('', [])
-    #     self.create_page.form.submit()
-    #     self.assertTrue(self.create_page.has_errors())
-    #
-    # def test_create_topic_with_forbid_comments(self):
-    #     title = u'Топик с закрытыми комментариями'
-    #     main_text = u'main text'
-    #
-    #     self.create_page.create_simple_topic(self.BLOG, title, main_text)
-    #     self.create_page.form.forbid_comment_click()
-    #     self.create_page.form.submit()
-    #
-    #     topic = TopicPage(self.driver).topic
-    #     self.assertFalse(topic.has_add_comment_btn())
+        self.create_page.form.set_main_text(main_text)
+        self.create_page.form.submit()
+        self.assertTrue(self.create_page.has_errors())
+
+    def test_without_main_text(self):
+        title = u'Tопик без основного текста'
+
+        self.create_page.form.blog_select_open()
+        self.create_page.form.blog_select_set_option(self.BLOG)
+        self.create_page.form.set_title(title)
+        self.create_page.form.submit()
+        self.assertTrue(self.create_page.has_errors())
+
+    def test_empty_fields(self):
+        self.create_page.form.submit()
+        self.assertTrue(self.create_page.has_errors())
+
+    def test_add_poll_with_empty_fields(self):
+        title = u'Топик с добавлением опроса, но без вопроса и вариантов'
+        main_text = u'main text'
+
+        self.create_page.create_simple_topic(self.BLOG, title, main_text)
+        self.create_page.form.add_poll('', [])
+        self.create_page.form.submit()
+        self.assertTrue(self.create_page.has_errors())
+
+    def test_create_topic_with_forbid_comments(self):
+        title = u'Топик с закрытыми комментариями'
+        main_text = u'main text'
+
+        self.create_page.create_simple_topic(self.BLOG, title, main_text)
+        self.create_page.form.forbid_comment_click()
+        self.create_page.form.submit()
+
+        topic = TopicPage(self.driver).topic
+        self.assertFalse(topic.has_add_comment_btn())
 
 
     # # Этот тест не пройдёт, так как на портале грамматическая ошибка :)

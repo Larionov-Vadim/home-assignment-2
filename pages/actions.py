@@ -7,7 +7,6 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from component import Component
 import conf
-from selenium import webdriver
 
 __author__ = 'vadim'
 
@@ -15,7 +14,7 @@ __author__ = 'vadim'
 class Actions(Component):
     def select_text(self, by=By.XPATH, value=None):
         ActionChains(self.driver).click(self.driver.find_element(by, value)).\
-            key_down(Keys.CONTROL).send_keys("a").key_up(Keys.CONTROL).perform()
+            key_down(Keys.CONTROL).send_keys("A").key_up(Keys.CONTROL).perform()
 
     def set_text_to_alert(self, text):
         alert = self.driver.switch_to.alert
@@ -25,16 +24,16 @@ class Actions(Component):
     def click_to_element(self, by=By.XPATH, value=None):
         self.driver.find_element(by, value).click()
 
-    def wait_alert(self):
-        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).\
-            until(expected_conditions.alert_is_present())
-
     def send_keys_to_elem_and_perform(self, by, name, *keys):
         elem = self.driver.find_element(by, name)
         ActionChains(self.driver).send_keys_to_element(elem, *keys).perform()
 
     def send_keys_and_perform(self, *keys):
         ActionChains(self.driver).send_keys(*keys).perform()
+
+    def wait_alert(self):
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).\
+            until(expected_conditions.alert_is_present())
 
     def wait_and_get_text(self, by=By.XPATH, value=None):
         return WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
@@ -46,20 +45,11 @@ class Actions(Component):
             lambda d: d.find_element(by, value).get_attribute(attr)
         )
 
-    def wait_until_text_is_not_empty(self, by, value):
+    def wait_and_click(self, by=By.XPATH, value=None):
         WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
-            lambda d: d.find_element(by, value).text != ''
+            lambda d: d.find_element(by, value).is_displayed()
         )
-
-    def wait_until_execute_script_is_not_empty(self, script):
-        return WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
-            lambda d: d.execute_script(script) != ''
-        )
-
-    def wait_until_execute_script_is_not_equals_msg(self, script, msg):
-        return WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
-            lambda d: d.execute_script(script) != msg
-        )
+        self.driver.find_element(by, value).click()
 
     def execute_script(self, script):
         self.driver.execute_script(script)
@@ -97,19 +87,8 @@ class Actions(Component):
     def submit(self, by=By.XPATH, value=None):
         self.driver.find_element(by, value).submit()
 
-    def wait_and_click(self, by=By.XPATH, value=None):
-        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
-            lambda d: d.find_element(by, value).is_displayed()
-        )
-        self.driver.find_element(by, value).click()
-
     def get_text(self, by=By.XPATH, value=None):
         return self.driver.find_element(by, value).text
-
-    def wait_until_elem_is_not_displayed(self, by, value):
-        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
-            lambda d: d.find_element(by, value).is_displayed()
-        )
 
     def clear(self, by, value):
         self.driver.find_element(by, value).clear()

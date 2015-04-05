@@ -1,9 +1,7 @@
 # coding: utf-8
-from time import sleep
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from component import Component
@@ -11,7 +9,7 @@ import conf
 from pages.actions import Actions
 from pages.base import Page
 from selenium.webdriver.support.ui import Select
-from selenium import webdriver
+
 __author__ = 'vadim'
 
 
@@ -56,43 +54,47 @@ class CreateForm(Component):
     MAIN_TEXT = '//*[@id="id_text"]'
     CREATE_BUTTON = '//button[contains(text(),"Создать")]'
 
-    #H4_BUTTON = '//a[@title="H4"]'
-    H4_BUTTON = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[1]/a'
-    #H5_BUTTON = '//*[@title="H5"]'
-    H5_BUTTON = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[2]/a'
-    #H6_BUTTON = '//*[@title="H6"]'
-    H6_BUTTON = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[3]/a'
+    H4_BUTTON = '(//*[@title="H4"])[2]'
+    #H4_BUTTON = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[1]/a'
+    H5_BUTTON = '(//*[@title="H5"])[2]'
+    #H5_BUTTON = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[2]/a'
+    H6_BUTTON = '(//*[@title="H6"])[2]'
+    #H6_BUTTON = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[3]/a'
 
-    #BOLD_TEXT = '//*[contains(text(),"жирный")]'
-    BOLD_TEXT = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[5]/a'
-    #ITALIC_TEXT = '//*[contains(text(),"курсив")]'
-    ITALIC_TEXT = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[6]/a'
-    #STRIKETHROUGH_TEXT = '//*[contains(text(),"зачеркнутый")]'
-    STRIKETHROUGH_TEXT = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[7]/a'
-    #UNDERLINE_TEXT = '//*[contains(text(),"подчеркнутый")]'
-    UNDERLINE_TEXT = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[8]/a'
+    BOLD_TEXT = '(//*[contains(text(),"жирный")])[2]'
+    #BOLD_TEXT = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[5]/a'
+    ITALIC_TEXT = '(//*[contains(text(),"курсив")])[2]'
+    #ITALIC_TEXT = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[6]/a'
+    STRIKETHROUGH_TEXT = '(//*[contains(text(),"зачеркнутый")])[2]'
+    #STRIKETHROUGH_TEXT = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[7]/a'
+    UNDERLINE_TEXT = '(//*[contains(text(),"подчеркнутый")])[2]'
+    #UNDERLINE_TEXT = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[8]/a'
 
-    #QUOTE = '//*[contains(text(),"цитировать")]'
-    QUOTE = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[9]/a'
-    #CODE = '//*[@title="код"]'
-    CODE = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[10]/a'
+    QUOTE = '(//*[contains(text(),"цитировать")])[2]'
+    #QUOTE = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[9]/a'
+    CODE = '(//*[@title="код"])[2]'
+    #CODE = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[10]/a'
 
-    LIST = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[12]/a'
-    NUMBERED_LIST = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[13]/a'
+    LIST = '(//*[contains(@class, "editor-ul")])[2]'
+    #LIST = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[12]/a'
+    NUMBERED_LIST = '(//*[contains(@class, "editor-ol")])[2]'
+    #NUMBERED_LIST = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[13]/a'
 
-    ADD_LINK = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[16]/a'
-    ADD_USER = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[17]/a'
+    ADD_IMAGE = '(//*[contains(text(),"изображение")])[2]'
+    #ADD_IMAGE = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[15]/a'
+    ADD_LINK = '(//*[contains(text(),"Ссылка")])[2]'
+    #ADD_LINK = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[16]/a'
+    ADD_USER = '(//*[contains(text(),"Пользователь")])[2]'
+    #ADD_USER = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[17]/a'
 
-    ADD_IMAGE = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[15]/a'
+
     WINDOW_UPLOAD = '//*[@id="window_upload_img"]'
-
-
 
     FROM_INTERNET = '//*[contains(text(), "Из интернета")]'
     INPUT_IMG_URL = '//*[@id="img_url"]'
     ALIGN_SELECT_FROM_INTERNET = '//*[@id="form-image-url-align"]'
     IMAGE_DESCRIPTION_FROM_INTERNET = './/*[@id="form-image-url-title"]'
-    SUBMIT_UPLOAD_IMAGE_FROM_INTERNET = '//*[@id="submit-image-upload-link-upload"]'         # Загрузить изображение
+    SUBMIT_UPLOAD_IMAGE_FROM_INTERNET = '//*[@id="submit-image-upload-link-upload"]'      # Загрузить изображение
     SUBMIT_INSERT_IMAGE_AS_LINK_FROM_INTERNET = './/*[@id="submit-image-upload-link"]'    # Вставить изображение как ссылку
 
     FROM_PC = '//*[contains(text(), "С компьютера")]'
@@ -100,8 +102,6 @@ class CreateForm(Component):
     ALIGN_SELECT_FROM_PC = '//*[@id="form-image-align"]'
     IMAGE_DESCRIPTION_FROM_PC = '//*[@id="form-image-title"]'
     SUBMIT_IMAGE_FILE = '//button[@id="submit-image-upload"]'
-
-    # INPUT_FILEDATA = '//*[@name="filedata"]'
 
     SEARCH_USER_POPUP = './/*[@id="search-user-login-popup"]'
 
@@ -114,21 +114,12 @@ class CreateForm(Component):
     FORBID_COMMENT = '//*[@id="id_forbid_comment"]'
     # </locators>
 
-    # <scripts>
-    SHOW_UPLOAD_PHOTO_CONTAINER_SCRIPT = '$(".markdown-upload-photo-container").show()'
-    GET_TEXT_SCRIPT = '$("#id_text").val()'    # Получает текст из основного поля ввода textarea
-    TEXT_CONTAINS_SCRIPT = '$("#id_text").val().contains("{}");'
-    # </scripts>
-
     def blog_select_open(self):
         self.driver.find_element_by_xpath(self.BLOGSELECT).click()
 
     def blog_select_set_option(self, option_text):
         self.driver.find_element_by_xpath(self.OPTION.format(option_text)).click()
-    #
-    # def blog_select_by_id(self, option_id):
-    #     self.driver.find_element_by_xpath(self.OPTION_BLOG_ID.format(option_id)).click()
-    #
+
     def set_title(self, title):
         self.driver.find_element_by_xpath(self.TITLE).send_keys(title)
 
@@ -137,12 +128,13 @@ class CreateForm(Component):
         ActionChains(self.driver).click(main_text_field).send_keys(main_text).perform()
 
     def submit(self):
+        # Это всё для Chrome
         actions = Actions(self.driver)
         WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
             lambda d: d.find_element_by_xpath(self.CREATE_BUTTON).is_enabled()
         )
         create_button = self.driver.find_element_by_xpath(self.CREATE_BUTTON)
-        actions.execute_script('window.scrollTo(0, {0});'.format(create_button.location['y']))
+        actions.execute_script('window.scrollTo(0, {});'.format(create_button.location['y']))
         actions.wait_and_click(By.XPATH, self.CREATE_BUTTON)
 
     # <Доступ по клику к элементам>
@@ -216,7 +208,9 @@ class CreateForm(Component):
             expected_conditions.presence_of_element_located((By.XPATH, choose_user))
         )
         actions.wait_and_click(By.XPATH, choose_user)
-        actions.wait_until_execute_script_is_not_empty(self.GET_TEXT_SCRIPT)
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            lambda d: name in d.find_element_by_xpath(self.MAIN_TEXT).get_attribute('value')
+        )
 
     def insert_image(self, url, align='', description='', as_link=False):
         actions = Actions(self.driver)

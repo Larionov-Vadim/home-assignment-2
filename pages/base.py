@@ -1,10 +1,12 @@
 # coding: utf-8
 import os
+from selenium.webdriver.common.by import By
 import conf
 import urlparse
 from component import Component
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import DesiredCapabilities, Remote
+from selenium.webdriver.support import expected_conditions
 
 __author__ = 'vadim'
 
@@ -53,15 +55,27 @@ class AuthForm(Component):
     LOGIN_BUTTON = '//a[text()="Вход для участников"]'
 
     def open_form(self):
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            expected_conditions.presence_of_element_located((By.XPATH, self.LOGIN_BUTTON))
+        )
         self.driver.find_element_by_xpath(self.LOGIN_BUTTON).click()
 
     def set_login(self, login):
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            expected_conditions.presence_of_element_located((By.XPATH, self.LOGIN))
+        )
         self.driver.find_element_by_xpath(self.LOGIN).send_keys(login)
 
     def set_password(self, pwd):
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            expected_conditions.presence_of_element_located((By.XPATH, self.PASSWORD))
+        )
         self.driver.find_element_by_xpath(self.PASSWORD).send_keys(pwd)
 
     def submit(self):
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            expected_conditions.presence_of_element_located((By.XPATH, self.SUBMIT))
+        )
         self.driver.find_element_by_xpath(self.SUBMIT).click()
 
 
