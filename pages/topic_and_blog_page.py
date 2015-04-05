@@ -16,12 +16,11 @@ class TopicPage(Page):
 
 class Topic(Component):
     TITLE = '//*[@class="topic-title"]/a'
-    TEXT = '//*[@class="topic-content text"]/p'
+    TEXT = '//*[@class="topic-content text"]'
     BLOG = '//*[@class="topic-blog"]'
     DELETE_BUTTON = '//a[@class="actions-delete"]'
     DELETE_BUTTON_CONFIRM = '//input[@value="Удалить"]'
-    CONTENT = '//*[@class="topic-content text"]'
-    POLL_ANSWER = './/*[@class="poll-vote"]/li'
+    # POLL_ANSWER = '//*[@class="poll-vote"]/li'
     ADD_COMMENT = '//*[contains(@class,"comment-add-link")]'
 
     def get_title(self):
@@ -47,13 +46,10 @@ class Topic(Component):
     def get_inner_html_text(self):
         return Actions(self.driver).wait_and_get_attribute(By.XPATH, self.TEXT, 'innerHTML')
 
-    def get_inner_html_content(self):
-        return Actions(self.driver).wait_and_get_attribute(By.XPATH, self.CONTENT, 'innerHTML')
-
-    def get_poll_answers(self):
-        actions = Actions(self.driver)
-        elements = actions.get_list_elements(By.XPATH, self.POLL_ANSWER)
-        return actions.get_list_text_from_list_elements(*elements)
+    # def get_poll_answers(self):
+    #     actions = Actions(self.driver)
+    #     elements = actions.get_list_elements(By.XPATH, self.POLL_ANSWER)
+    #     return actions.get_list_text_from_list_elements(*elements)
 
     def has_add_comment_btn(self):
         return Actions(self.driver).element_is_exist(By.XPATH, self.ADD_COMMENT)
