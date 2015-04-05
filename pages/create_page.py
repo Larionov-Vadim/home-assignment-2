@@ -1,11 +1,17 @@
 # coding: utf-8
-from selenium.common.exceptions import NoSuchElementException
+from time import sleep
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
 from component import Component
+import conf
 from pages.actions import Actions
 from pages.base import Page
-
+from selenium.webdriver.support.ui import Select
+from selenium import webdriver
 __author__ = 'vadim'
 
 
@@ -74,35 +80,46 @@ class CreateForm(Component):
     LIST = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[12]/a'
     NUMBERED_LIST = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[13]/a'
 
-    # LIST_SHORT_TEXT = '(//*[@title="Список"])[1]'
-    # LIST_MAIN_TEXT = '(//*[@title="Список"])[2]'
-    # LIST_WITH_NUM_SHORT_TEXT = '(//*[@title="Список с нумерацией"])[1]'
-    # LIST_WITH_NUM_MAIN_TEXT = '(//*[@title="Список с нумерацией"])[2]'
-    # ADD_LINK_SHORT_TEXT = '(//*[@title="Вставить ссылку"])[1]'
-    # ADD_LINK_MAIN_TEXT = '(//*[@title="Вставить ссылку"])[2]'
-    # INSERT_IMG_SHORT_TEXT = '(//*[@title="Вставить изображение"])[1]'
-    # INSERT_IMG_MAIN_TEXT = '(//*[@title="Вставить изображение"])[2]'
-    # ADD_USER_SHORT_TEXT = '(//*[@title="Добавить пользователя"])[1]'
-    # ADD_USER_MAIN_TEXT = '(//*[@title="Добавить пользователя"])[2]'
-    #
-    # INPUT_FILEDATA_SHORT_TEXT = '(//*[@name="filedata"])[1]'
-    # INPUT_FILEDATA_MAIN_TEXT = '(//*[@name="filedata"])[2]'
-    #
-    # SEARCH_USER_POPUP = './/*[@id="search-user-login-popup"]'
-    #
-    # ADD_POLL_CHECKBOX = '//*[@class="input-checkbox add-poll"]'
-    # QUESTION_POLL = '//*[@id="id_question"]'
-    # ANSWEAR_POLL = '(//*[@id="id_form-{}-answer"])'
-    # ADD_OPTION_ANSWER = '//*[contains(text(),"Добавить вариант")]'
-    # DELETE_OPTION_ANSWER = '//*[@title="Удалить" and not(@style="display: none;")]'
-    #
-    # FORBID_COMMENT = '//*[@id="id_forbid_comment"]'
-    # # </locators>
-    #
-    # # <scripts>
-    # SHOW_UPLOAD_PHOTO_CONTAINER_SCRIPT = '$(".markdown-upload-photo-container").show()'
-    # # </scripts>
-    #
+    ADD_LINK = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[16]/a'
+    ADD_USER = './/*[@id="markItUpId_text"]/div/div[1]/ul/li[17]/a'
+
+    ADD_IMAGE = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[15]/a'
+    WINDOW_UPLOAD = '//*[@id="window_upload_img"]'
+
+
+
+    FROM_INTERNET = '//*[contains(text(), "Из интернета")]'
+    INPUT_IMG_URL = '//*[@id="img_url"]'
+    ALIGN_SELECT_FROM_INTERNET = '//*[@id="form-image-url-align"]'
+    IMAGE_DESCRIPTION_FROM_INTERNET = './/*[@id="form-image-url-title"]'
+    SUBMIT_UPLOAD_IMAGE_FROM_INTERNET = '//*[@id="submit-image-upload-link-upload"]'         # Загрузить изображение
+    SUBMIT_INSERT_IMAGE_AS_LINK_FROM_INTERNET = './/*[@id="submit-image-upload-link"]'    # Вставить изображение как ссылку
+
+    FROM_PC = '//*[contains(text(), "С компьютера")]'
+    INPUT_IMG_FILE = '//*[@id="img_file"]'
+    ALIGN_SELECT_FROM_PC = '//*[@id="form-image-align"]'
+    IMAGE_DESCRIPTION_FROM_PC = '//*[@id="form-image-title"]'
+    SUBMIT_IMAGE_FILE = '//button[@id="submit-image-upload"]'
+
+    # INPUT_FILEDATA = '//*[@name="filedata"]'
+
+    SEARCH_USER_POPUP = './/*[@id="search-user-login-popup"]'
+
+    ADD_POLL_CHECKBOX = '//*[@class="input-checkbox add-poll"]'
+    QUESTION_POLL = '//*[@id="id_question"]'
+    ANSWEAR_POLL = '(//*[@id="id_form-{}-answer"])'
+    ADD_OPTION_ANSWER = '//*[contains(text(),"Добавить вариант")]'
+    DELETE_OPTION_ANSWER = '//*[@title="Удалить" and not(@style="display: none;")]'
+
+    FORBID_COMMENT = '//*[@id="id_forbid_comment"]'
+    # </locators>
+
+    # <scripts>
+    SHOW_UPLOAD_PHOTO_CONTAINER_SCRIPT = '$(".markdown-upload-photo-container").show()'
+    GET_TEXT_SCRIPT = '$("#id_text").val()'    # Получает текст из основного поля ввода textarea
+    TEXT_CONTAINS_SCRIPT = '$("#id_text").val().contains("{}");'
+    # </scripts>
+
     def blog_select_open(self):
         self.driver.find_element_by_xpath(self.BLOGSELECT).click()
 
@@ -120,7 +137,13 @@ class CreateForm(Component):
         ActionChains(self.driver).click(main_text_field).send_keys(main_text).perform()
 
     def submit(self):
-        Actions(self.driver).click_to_element(By.XPATH, self.CREATE_BUTTON)
+        actions = Actions(self.driver)
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            lambda d: d.find_element_by_xpath(self.CREATE_BUTTON).is_enabled()
+        )
+        create_button = self.driver.find_element_by_xpath(self.CREATE_BUTTON)
+        actions.execute_script('window.scrollTo(0, {0});'.format(create_button.location['y']))
+        actions.wait_and_click(By.XPATH, self.CREATE_BUTTON)
 
     # <Доступ по клику к элементам>
     def h4_text_click(self):
@@ -156,64 +179,92 @@ class CreateForm(Component):
     def numbered_list_click(self):
         Actions(self.driver).wait_and_click(By.XPATH, self.NUMBERED_LIST)
 
-    # def add_poll_checkbox_click(self):
-    #     Actions(self.driver).click_to_element(By.XPATH, self.ADD_POLL_CHECKBOX)
-    #
-    # def add_additional_answer_click(self):
-    #     Actions(self.driver).click_to_element(By.XPATH, self.ADD_OPTION_ANSWER)
-    #
-    # def delete_additional_answer_click(self):
-    #     Actions(self.driver).click_to_element(By.XPATH, self.DELETE_OPTION_ANSWER)
-    #
-    # def forbid_comment_click(self):
-    #     Actions(self.driver).click_to_element(By.XPATH, self.FORBID_COMMENT)
-    #
-    # # </Доступ по клику к элементам>
+    def add_poll_checkbox_click(self):
+        Actions(self.driver).wait_and_click(By.XPATH, self.ADD_POLL_CHECKBOX)
+
+    def add_additional_answer_click(self):
+        Actions(self.driver).wait_and_click(By.XPATH, self.ADD_OPTION_ANSWER)
+
+    def delete_additional_answer_click(self):
+        Actions(self.driver).wait_and_click(By.XPATH, self.DELETE_OPTION_ANSWER)
+
+    def forbid_comment_click(self):
+        Actions(self.driver).wait_and_click(By.XPATH, self.FORBID_COMMENT)
+
+    # </Доступ по клику к элементам>
 
     # <Выделение текста>
     def select_main_text(self):
         Actions(self.driver).select_text(By.XPATH, self.MAIN_TEXT)
     # </Выделение текста>
 
-    # def add_link_to_main_text(self, url, name):
-    #     actions = Actions(self.driver)
-    #     actions.click_to_element(By.XPATH, self.ADD_LINK_MAIN_TEXT)
-    #     actions.wait_alert()
-    #     actions.set_text_to_alert(url)
-    #     actions.send_keys_and_perform(name)
-    #
-    # def insert_image_to_main_text(self, url, name=''):
-    #     actions = Actions(self.driver)
-    #     actions.click_to_element(By.XPATH, self.INSERT_IMG_MAIN_TEXT)
-    #     actions.wait_alert()
-    #     actions.set_text_to_alert(url)
-    #     actions.send_keys_and_perform(name)
-    #
-    # def upload_image_to_main_text(self, path_to_file):
-    #     actions = Actions(self.driver)
-    #     actions.execute_script(self.SHOW_UPLOAD_PHOTO_CONTAINER_SCRIPT)
-    #     actions.wait_until_elem_is_not_displayed(By.XPATH, self.INPUT_FILEDATA_MAIN_TEXT)
-    #     actions.send_keys_to_elem_and_perform(By.XPATH, self.INPUT_FILEDATA_MAIN_TEXT, path_to_file)
-    #     actions.wait_until_text_is_not_empty(By.XPATH, self.MAIN_TEXT)
-    #
-    # def add_poll(self, question, *answers):
-    #     actions = Actions(self.driver)
-    #     actions.click_to_element(By.XPATH, self.ADD_POLL_CHECKBOX)
-    #     actions.send_keys_to_elem_and_perform(By.XPATH, self.QUESTION_POLL, question)
-    #
-    #     count = len(answers)
-    #     for index in range(count):
-    #         answer_xpath = self.ANSWEAR_POLL.format(index)
-    #         if not actions.element_is_exist(By.XPATH, answer_xpath):
-    #             answer_xpath += '[2]'
-    #             actions.click_and_wait(By.XPATH, self.ADD_OPTION_ANSWER, By.XPATH, answer_xpath)
-    #         actions.send_keys_to_elem_and_perform(By.XPATH, answer_xpath, answers[index])
-    #
-    # def add_user_to_main_text(self, name):
-    #     actions = Actions(self.driver)
-    #     actions.click_and_wait(By.XPATH, self.ADD_USER_MAIN_TEXT, By.XPATH, self.SEARCH_USER_POPUP)
-    #     self.driver.find_element_by_xpath(self.SEARCH_USER_POPUP).click()
-    #     actions.send_keys_to_elem_and_perform(By.XPATH, self.SEARCH_USER_POPUP, name)
-    #     choose_user = '//*[contains(text(), "' + name + '")]'
-    #     actions.wait_and_click(By.XPATH, choose_user)
-    #     actions.wait_until_text_is_not_empty(By.XPATH, self.SHORT_TEXT)
+    def add_link_to_main_text(self, url, name):
+        actions = Actions(self.driver)
+        actions.wait_and_click(By.XPATH, self.ADD_LINK)
+        actions.wait_alert()
+        actions.set_text_to_alert(url)
+        actions.send_keys_and_perform(name)
+
+    def add_user(self, name):
+        actions = Actions(self.driver)
+        actions.wait_and_click(By.XPATH, self.ADD_USER)
+        actions.wait_and_click(By.XPATH, self.SEARCH_USER_POPUP)
+        actions.send_keys_and_perform(name)
+        actions.submit(By.XPATH, self.SEARCH_USER_POPUP)
+        choose_user = '//*[contains(text(), "' + name + '")]'
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            expected_conditions.presence_of_element_located((By.XPATH, choose_user))
+        )
+        actions.wait_and_click(By.XPATH, choose_user)
+        actions.wait_until_execute_script_is_not_empty(self.GET_TEXT_SCRIPT)
+
+    def insert_image(self, url, align='', description='', as_link=False):
+        actions = Actions(self.driver)
+        actions.wait_and_click(By.XPATH, self.ADD_IMAGE)
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            expected_conditions.presence_of_element_located((By.XPATH, self.WINDOW_UPLOAD))
+        )
+        actions.wait_and_click(By.XPATH, self.FROM_INTERNET)
+        actions.clear(By.XPATH, self.INPUT_IMG_URL)
+        actions.send_keys_to_elem_and_perform(By.XPATH, self.INPUT_IMG_URL, url)
+        align_selector = Select(self.driver.find_element_by_xpath(self.ALIGN_SELECT_FROM_INTERNET))
+        align_selector.select_by_value(align)
+        actions.wait_and_click(By.XPATH, self.IMAGE_DESCRIPTION_FROM_INTERNET)
+        actions.send_keys_and_perform(*description)
+        if as_link:
+            actions.wait_and_click(By.XPATH, self.SUBMIT_INSERT_IMAGE_AS_LINK_FROM_INTERNET)
+        else:
+            actions.wait_and_click(By.XPATH, self.SUBMIT_UPLOAD_IMAGE_FROM_INTERNET)
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            lambda d: description in d.find_element_by_xpath(self.MAIN_TEXT).get_attribute('value')
+        )
+
+    def upload_image(self, path_to_file, align='', description=''):
+        actions = Actions(self.driver)
+        actions.wait_and_click(By.XPATH, self.ADD_IMAGE)
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            expected_conditions.presence_of_element_located((By.XPATH, self.WINDOW_UPLOAD))
+        )
+        actions.wait_and_click(By.XPATH, self.FROM_PC)
+        actions.send_keys_to_elem_and_perform(By.XPATH, self.INPUT_IMG_FILE, path_to_file)
+        align_selector = Select(self.driver.find_element_by_xpath(self.ALIGN_SELECT_FROM_PC))
+        align_selector.select_by_value(align)
+        actions.wait_and_click(By.XPATH, self.IMAGE_DESCRIPTION_FROM_PC)
+        actions.send_keys_and_perform(*description)
+        actions.wait_and_click(By.XPATH, self.SUBMIT_IMAGE_FILE)
+        WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            lambda d: description in d.find_element_by_xpath(self.MAIN_TEXT).get_attribute('value')
+        )
+
+    def add_poll(self, question, *answers):
+        actions = Actions(self.driver)
+        actions.click_to_element(By.XPATH, self.ADD_POLL_CHECKBOX)
+        actions.send_keys_to_elem_and_perform(By.XPATH, self.QUESTION_POLL, question)
+
+        count = len(answers)
+        for index in range(count):
+            answer_xpath = self.ANSWEAR_POLL.format(index)
+            if not actions.element_is_exist(By.XPATH, answer_xpath):
+                answer_xpath += '[2]'
+                actions.click_and_wait(By.XPATH, self.ADD_OPTION_ANSWER, By.XPATH, answer_xpath)
+            actions.send_keys_to_elem_and_perform(By.XPATH, answer_xpath, answers[index])

@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from component import Component
 import conf
+from selenium import webdriver
 
 __author__ = 'vadim'
 
@@ -48,6 +49,16 @@ class Actions(Component):
     def wait_until_text_is_not_empty(self, by, value):
         WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
             lambda d: d.find_element(by, value).text != ''
+        )
+
+    def wait_until_execute_script_is_not_empty(self, script):
+        return WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            lambda d: d.execute_script(script) != ''
+        )
+
+    def wait_until_execute_script_is_not_equals_msg(self, script, msg):
+        return WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
+            lambda d: d.execute_script(script) != msg
         )
 
     def execute_script(self, script):
@@ -99,3 +110,6 @@ class Actions(Component):
         WebDriverWait(self.driver, conf.TIMEOUT, conf.POLL_FREQUENCY).until(
             lambda d: d.find_element(by, value).is_displayed()
         )
+
+    def clear(self, by, value):
+        self.driver.find_element(by, value).clear()
