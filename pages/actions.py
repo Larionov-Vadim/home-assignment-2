@@ -14,7 +14,7 @@ __author__ = 'vadim'
 class Actions(Component):
     def select_text(self, by=By.XPATH, value=None):
         ActionChains(self.driver).click(self.driver.find_element(by, value)).\
-            key_down(Keys.CONTROL).send_keys("A").key_up(Keys.CONTROL).perform()
+            key_down(Keys.CONTROL).send_keys('a').send_keys('A').key_up(Keys.CONTROL).perform()
 
     def set_text_to_alert(self, text):
         alert = self.driver.switch_to.alert

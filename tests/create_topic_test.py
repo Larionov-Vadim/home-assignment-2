@@ -364,33 +364,3 @@ class CreateTopicTestCase(unittest.TestCase):
 
         topic = TopicPage(self.driver).topic
         self.assertFalse(topic.has_add_comment_btn())
-
-
-    # # Этот тест не пройдёт, так как на портале грамматическая ошибка :)
-    # # Не особо приятно её видеть
-    # # def test_grammar(self):
-    # #     expected_info = self.create_page.get_info()
-    # #     self.create_page.form.blog_select_open()
-    # #     self.create_page.form.blog_select_set_option(self.BLOG)
-    # #     self.create_page.form.blog_select_open()
-    # #     self.create_page.form.blog_select_by_id(0)
-    # #     self.assertEqual(expected_info, self.create_page.get_info())
-    #
-    # # Бага! Тест не пройдёт. В топик можно добавлять дополнительные варианты опроса, но удалить можно
-    # #   только последний. Пустые варианты всё равно добавятся в топик
-    # # def test_add_poll_then_add_and_delete_answers(self):
-    # #     title = u'Топик с добавлением опроса, добавлением вариантов и их последующим удалением'
-    # #     short_text = u'short text'
-    # #     main_text = u'main text'
-    # #     expected_answers = [u'ans1', u'ans2']
-    # #     self.create_page.create_simple_topic(self.BLOG, title, short_text, main_text)
-    # #     self.create_page.form.add_poll(u'question', *expected_answers)
-    # #     self.create_page.form.add_additional_answer_click()
-    # #     self.create_page.form.add_additional_answer_click()
-    # #     self.create_page.form.delete_additional_answer_click()
-    # #     self.create_page.form.delete_additional_answer_click()
-    # #     self.create_page.form.submit()
-    # #
-    # #     topic = TopicPage(self.driver).topic
-    # #     actual_answers = topic.get_poll_answers()
-    # #     self.assertEqual(expected_answers, actual_answers)
